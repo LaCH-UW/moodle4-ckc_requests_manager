@@ -5,7 +5,7 @@ Course Request Manager block for Moodle
 
 ![PHP](https://img.shields.io/badge/PHP-v7.1%2F%20v7.2%2F%20v7.3%2F%20v7.4-blue.svg)
 ![Moodle](https://img.shields.io/badge/Moodle-v3.7%20to%20v3.11.x-orange.svg)
-[![GitHub Issues](https://img.shields.io/github/issues/michael-milette/moodle-block_cmanager.svg)](https://github.com/michael-milette/moodle-block_cmanager/issues)
+[![GitHub Issues](https://img.shields.io/github/issues/michael-milette/moodle-block_ckc_requests_manager.svg)](https://github.com/michael-milette/moodle-block_ckc_requests_manager/issues)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-green.svg)](#contributing)
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](#license)
 
@@ -49,10 +49,10 @@ This plugin requires Moodle 3.7+ from https://moodle.org/ .
 # Download Course Request Manager for Moodle
 
 The most recent STABLE release of Course Request Manager for Moodle is available from:
-https://moodle.org/plugins/block_cmanager
+https://moodle.org/plugins/block_ckc_requests_manager
 
 The most recent DEVELOPMENT release can be found at:
-https://github.com/michael-milette/moodle-block_cmanager
+https://github.com/michael-milette/moodle-block_ckc_requests_manager
 
 [(Back to top)](#table-of-contents)
 
@@ -119,7 +119,7 @@ You can also remove or add permissions to the manager and course creator roles u
 
 # Usage
 
-[Documentation for the latest release of Course Request Manager block](https://docs.moodle.org/en/blocks/cmanager/) is available online.
+[Documentation for the latest release of Course Request Manager block](https://docs.moodle.org/en/blocks/ckc_requests_manager/) is available online.
 
 [(Back to top)](#table-of-contents)
 
@@ -129,7 +129,7 @@ There are no special considerations required for updating the plugin.
 
 TODO: The first public ALPHA version was released on 2017-07-07, BETA on 2017-11-11 and STABLE as of 2018-11-26.
 
-For more information on releases since then, see [CHANGELOG.md](https://github.com/michael-milette/moodle-block_cmanager/blob/master/CHANGELOG.md).
+For more information on releases since then, see [CHANGELOG.md](https://github.com/michael-milette/moodle-block_ckc_requests_manager/blob/master/CHANGELOG.md).
 
 If you have any upgrade issues, it is best to remove the block, uninstall and reinstall. Just make sure all requests have been approved and the request history is not that valuable etc (as the old tables are dropped).
 
@@ -161,7 +161,7 @@ If you need a different language that is not yet supported, please feel free to 
 
 This plugin has not been tested for right-to-left (RTL) language support. If you want to use this plugin with a RTL language and it doesn't work as-is, feel free to prepare a pull request and submit it to the project page at:
 
-https://github.com/michael-milette/moodle-block_cmanager
+https://github.com/michael-milette/moodle-block_ckc_requests_manager
 
 # Troubleshooting
 
@@ -186,7 +186,7 @@ https://github.com/michael-milette/moodle-block_cmanaer/issues
 
 # Contributing
 
-If you are interested in helping, please take a look at our [contributing](https://github.com/michael-milette/moodle-block_cmanager/blob/master/CONTRIBUTING.md) guidelines for details on our code of conduct and the process for submitting pull requests to us.
+If you are interested in helping, please take a look at our [contributing](https://github.com/michael-milette/moodle-block_ckc_requests_manager/blob/master/CONTRIBUTING.md) guidelines for details on our code of conduct and the process for submitting pull requests to us.
 
 [(Back to top)](#table-of-contents)
 
@@ -196,7 +196,7 @@ Michael Milette, TNG Consulting Inc. - Lead Maintainer.
 
 Big thank you to the following contributors. (Please let me know if I forgot to include you in the list):
 
-* Kyle Goslin & Daniel McSweeney, Institute of Technology Blanchardstown, authors of the original [Course Request Manager for Moodle plugin](https://github.com/Kylegoslin/moodle-block_cmanager).
+* Kyle Goslin & Daniel McSweeney, Institute of Technology Blanchardstown, authors of the original [Course Request Manager for Moodle plugin](https://github.com/Kylegoslin/moodle-block_ckc_requests_manager).
 * Daniel Kearnan, Government of Canada
 * Jeya Prakash
 * Nicholas Stefanski

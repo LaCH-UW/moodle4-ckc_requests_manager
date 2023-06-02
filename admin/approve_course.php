@@ -1,11 +1,11 @@
 <?php
 // ---------------------------------------------------------
-// block_cmanager is free software: you can redistribute it and/or modify
+// block_ckc_requests_manager is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// block_cmanager is distributed in the hope that it will be useful,
+// block_ckc_requests_manager is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,34 +19,34 @@
 // ---------------------------------------------------------
 /**
  * COURSE REQUEST MANAGER
-  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @copyright  2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @package   block_ckc_requests_manager
+ * @copyright 2018 Kyle Goslin, Daniel McSweeney
+ * @copyright 2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once("../../../config.php");
-global $CFG, $DB;
-$formPath = "$CFG->libdir/formslib.php";
-require_once($formPath);
-require_once('../lib/displayLists.php');
+require_once '../../../config.php';
+global $GLOBALS['CFG'], $GLOBALS['DB'];
+$formPath = "$GLOBALS['CFG']->libdir/formslib.php";
+require_once $formPath;
+require_once '../lib/displayLists.php';
 
-/** Navigation Bar **/
+// Navigation Bar
 $PAGE->navbar->ignore_active();
-$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_cmanager'), new moodle_url('/blocks/cmanager/cmanager_admin.php'));
-$PAGE->navbar->add(get_string('approvecourse', 'block_cmanager'));
+$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_ckc_requests_manager'), new moodle_url('/blocks/ckc_requests_manager/cmanager_admin.php'));
+$PAGE->navbar->add(get_string('approvecourse', 'block_ckc_requests_manager'));
 require_login();
 
-$PAGE->set_url('/blocks/cmanager/admin/approve_course.php');
+$PAGE->set_url('/blocks/ckc_requests_manager/admin/approve_course.php');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('requestReview_ApproveRequest', 'block_cmanager'));
-$PAGE->set_title(get_string('requestReview_ApproveRequest', 'block_cmanager'));
+$PAGE->set_heading(get_string('requestReview_ApproveRequest', 'block_ckc_requests_manager'));
+$PAGE->set_title(get_string('requestReview_ApproveRequest', 'block_ckc_requests_manager'));
 echo $OUTPUT->header();
 
 $context = context_system::instance();
-if (has_capability('block/cmanager:approverecord',$context)) {
+if (has_capability('block/cmanager:approverecord', $context)) {
 } else {
-  print_error(get_string('cannotapproverecord', 'block_cmanager'));
+    print_error(get_string('cannotapproverecord', 'block_ckc_requests_manager'));
 }
 
 
@@ -58,64 +58,61 @@ if (has_capability('block/cmanager:approverecord',$context)) {
 <script>
 // Open a small window with the details of the module for the admin to see.
 function popitup(url) {
-	newwindow=window.open(url,'name','height=600,width=500');
-	if (window.focus) {newwindow.focus()}
-	return false;
+    newwindow=window.open(url,'name','height=600,width=500');
+    if (window.focus) {newwindow.focus()}
+    return false;
 }
 </script>
 <style>
-	tr:nth-child(odd)		{ background-color:#eee; }
-	tr:nth-child(even)		{ background-color:#fff; }
+    tr:nth-child(odd)        { background-color:#eee; }
+    tr:nth-child(even)        { background-color:#fff; }
  </style>
 <?php
-
-
-if(isset($_GET['id'])){
-	$mid = required_param('id', PARAM_INT);
-	$_SESSION['mid'] = $mid;
+if (isset($_GET['id'])) {
+    $mid             = required_param('id', PARAM_INT);
+    $_SESSION['mid'] = $mid;
 } else {
-
-	$mid = $_SESSION['mid'];
+    $mid = $_SESSION['mid'];
 }
 
 
 
-class block_cmanager_approve_course_form extends moodleform {
-
-    function definition() {
-    global $CFG, $currentSess, $mid, $USER, $DB;
-
- 	$rec =  $DB->get_record('block_cmanager_records', array('id'=>$mid));
-
-	$mform =& $this->_form; // Don't forget the underscore!
-
-	// Page description text
-    $mform->addElement('html', '<p><a href="../cmanager_admin.php" class="btn btn-default"><img src="../icons/back.png" alt=""> '.get_string('back','block_cmanager').'</a></p>');
-
-	$rec = $DB->get_recordset_select('block_cmanager_records', 'id = ' . $mid);
-   	$displayModHTML = block_cmanager_display_admin_list($rec, false, false, false, '');
-
-	$outputHTML = '<div>'.$displayModHTML.'</div>';
-
-	$mform->addElement('html', $outputHTML);
-	$mform->addElement('html', '<button type="button" onclick="window.location.href=\'approve_course_new.php\'">'.get_string('requestReview_ApproveRequest','block_cmanager').'</button>');
-	$mform->addElement('html', '<button type="button" onclick="return popitup(\'showcoursedetails.php?id='.$mid.'\')">'.get_string('requestReview_OpenDetails','block_cmanager').'</button>');
+class block_ckc_requests_manager_approve_course_form extends moodleform
+{
 
 
-	}
-}
+    function definition()
+    {
+        global $GLOBALS['CFG'], $currentSess, $mid, $GLOBALS['USER'], $GLOBALS['DB'];
+
+        $rec = $GLOBALS['DB']->get_record('block_ckc_requests_manager_records', ['id' => $mid]);
+
+        $mform =& $this->_form;
+        // Don't forget the underscore!
+        // Page description text
+        $mform->addElement('html', '<p><a href="../cmanager_admin.php" class="btn btn-default"><img src="../icons/back.png" alt=""> '.get_string('back', 'block_ckc_requests_manager').'</a></p>');
+
+        $rec            = $GLOBALS['DB']->get_recordset_select('block_ckc_requests_manager_records', 'id = '.$mid);
+        $displayModHTML = block_ckc_requests_manager_display_admin_list($rec, false, false, false, '');
+
+        $outputHTML = '<div>'.$displayModHTML.'</div>';
+
+        $mform->addElement('html', $outputHTML);
+        $mform->addElement('html', '<button type="button" onclick="window.location.href=\'approve_course_new.php\'">'.get_string('requestReview_ApproveRequest', 'block_ckc_requests_manager').'</button>');
+        $mform->addElement('html', '<button type="button" onclick="return popitup(\'showcoursedetails.php?id='.$mid.'\')">'.get_string('requestReview_OpenDetails', 'block_ckc_requests_manager').'</button>');
+
+    }//end definition()
 
 
-$mform = new block_cmanager_approve_course_form();
+}//end class
+
+$mform = new block_ckc_requests_manager_approve_course_form();
 
 if ($mform->is_cancelled()) {
-}
-else if ($fromform=$mform->get_data()) {
-
-}
-else {
-	$mform->set_data($mform);
-	$mform->display();
+} else if ($fromform = $mform->get_data()) {
+} else {
+    $mform->set_data($mform);
+    $mform->display();
     echo $OUTPUT->footer();
 }
 
@@ -123,4 +120,4 @@ else {
 
 
 
-?>
+

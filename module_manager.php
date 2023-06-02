@@ -1,66 +1,50 @@
 <?php
-// ---------------------------------------------------------
-// block_cmanager is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// block_cmanager is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-//
-// COURSE REQUEST MANAGER BLOCK FOR MOODLE
-// by Kyle Goslin & Daniel McSweeney
-// Copyright 2012-2018 - Institute of Technology Blanchardstown.
-// ---------------------------------------------------------
+
 /**
  * COURSE REQUEST MANAGER
-  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @copyright  2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @category  Block
+ * @package   RequestsManager
+ * @author    Marcin Zbiegień <m.zbiegien@uw.edu.pl>
+ * @copyright 2023 UW
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @link      https://uw.edu.pl
  */
 
 
-require_once("../../config.php");
-$formpath = "$CFG->libdir/formslib.php";
-require_once($formpath);
-require_login();
-require_once('lib/displayLists.php');
-require_once('lib/boot.php');
+require_once '../../config.php';
 
-/** Navigation Bar **/
+require_once $GLOBALS['CFG']->libdir.'/formslib.php';
+
+require_login();
+
+require_once 'lib/displayLists.php';
+require_once 'lib/boot.php';
+
+// Navigation Bar
 $PAGE->navbar->ignore_active();
-$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_cmanager'), new moodle_url('/blocks/cmanager/module_manager.php'));
-$PAGE->set_url('/blocks/cmanager/module_manager.php');
+$moduleMgrUrl = new moodle_url('/blocks/ckc_requests_manager/module_manager.php');
+$PAGE->navbar->add(
+    get_string('cmanagerDisplay', 'block_ckc_requests_manager'),
+    $moduleMgrUrl
+);
+$PAGE->set_url('/blocks/ckc_requests_manager/module_manager.php');
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_heading(get_string('pluginname', 'block_cmanager'));
-$PAGE->set_title(get_string('pluginname', 'block_cmanager'));
+$PAGE->set_heading(get_string('pluginname', 'block_ckc_requests_manager'));
+$PAGE->set_title(get_string('pluginname', 'block_ckc_requests_manager'));
 
-if (has_capability('block/cmanager:viewrecord',$context)) {
-} else {
-  print_error(get_string('cannotviewrecords', 'block_cmanager'));
+if (false === has_capability('block/cmanager:viewrecord', $context)) {
+    print_error(get_string('cannotviewrecords', 'block_ckc_requests_manager'));
 }
-
-
 
 echo $OUTPUT->header();
 
-
 $context = context_system::instance();
-if (has_capability('block/cmanager:viewrecord',$context)) {
-} else {
-  print_error(get_string('cannotviewrecords', 'block_cmanager'));
+
+if (false === has_capability('block/cmanager:viewrecord', $context)) {
+    print_error(get_string('cannotviewrecords', 'block_ckc_requests_manager'));
 }
-
-
-
 ?>
 
 <script type="text/javascript">
@@ -69,7 +53,7 @@ var id = 0;
 // they sure that they want to cancel the
 // request
 function cancelConfirm(cid,langString) {
-	$("#conf1").modal();
+    $("#conf1").modal();
     id = cid;
 
 }
@@ -81,31 +65,64 @@ function cancelConfirm(cid,langString) {
  *
  * Main module manager form
  * Course request manager block for moodle main block interface
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @category  Block
+ * @package   RequestsManager
+ * @author    Marcin Zbiegień <m.zbiegien@uw.edu.pl>
+ * @copyright 2023 UW
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @link      https://uw.edu.pl
  */
-class block_cmanager_module_manager_form extends moodleform {
-
-    function definition() {
-        global $CFG, $DB, $USER;
-
-	    $mform =& $this->_form; // Don't forget the underscore!
-        $mform->addElement('html', '<p>' . get_string('cmanagerWelcome','block_cmanager') . '</p>');
-        $mform->addElement('html', '<p><a class="btn btn-default" href="course_request.php?mode=1">'.get_string('cmanagerRequestBtn','block_cmanager').'</a></p>');
-	    $uid = $USER->id;
-        // Get the list of pending requests
-	    $pendinglist = $DB->get_records('block_cmanager_records',array('createdbyid' => "$uid" , 'status' => 'PENDING'), 'id ASC');
-	    $outputhtml = '<div id="pendingrequestcontainer">';
-
-        $outputhtml .= block_cmanager_display_admin_list($pendinglist, true, false, false, 'user_manager');
+class block_ckc_requests_manager_module_manager_form extends moodleform
+{
 
 
-        $outputhtml .= generateGenericConfirm('conf1', get_string('alert', 'block_cmanager') ,
-                                     get_string('cmanagerConfirmCancel', 'block_cmanager'),
-                                     get_string('yes', 'block_cmanager'));
+    /**
+     * Form content definition.
+     *
+     * @return void
+     *
+     * @throws coding_exception On errors.
+     * @throws dml_exception On errors.
+     */
+    function definition()
+    {
+        // Don't forget the underscore!
+        $this->_form->addElement(
+            'html',
+            '<p>'.get_string('cmanagerWelcome', 'block_ckc_requests_manager').'</p>'
+        );
+        $this->_form->addElement(
+            'html',
+            '<p><a class="btn btn-default" href="course_request.php?mode=1">'.get_string('cmanagerRequestBtn', 'block_ckc_requests_manager').'</a></p>'
+        );
 
-        $outputhtml .= '
+        $outputHtml = '<div id="pendingrequestcontainer">';
+        // Get the list of pending requests.
+        $pendingList = $GLOBALS['DB']->get_records(
+            'block_ckc_requests_manager_records',
+            [
+                'createdbyid' => intval($GLOBALS['USER']->id),
+                'status'      => 'PENDING',
+            ],
+            'id ASC'
+        );
+
+        $outputHtml .= block_ckc_requests_manager_display_admin_list(
+            $pendingList,
+            true,
+            false,
+            false,
+            'user_manager'
+        );
+        $outputHtml .= generateGenericConfirm(
+            'conf1',
+            get_string('alert', 'block_ckc_requests_manager'),
+            get_string('cmanagerConfirmCancel', 'block_ckc_requests_manager'),
+            get_string('yes', 'block_ckc_requests_manager')
+        );
+
+        $outputHtml .= '
         <script>
         // cancel request click handler
         // just does a hard redirect to the delete page and back.
@@ -119,27 +136,24 @@ class block_cmanager_module_manager_form extends moodleform {
 
         </script>
         ';
-        // Existing Requests
+        // Existing Requests.
+        $this->_form->addElement('html', '<div style="">	'.$outputHtml.'</div>');
 
-        $mform->addElement('html', '<div style="">	'.$outputhtml.'</div>');
-	    } // Close the function
+    }//end definition()
 
-    } // Close the class
 
-$mform = new block_cmanager_module_manager_form();
+}//end class
 
-if ($mform->is_cancelled()) {
-	echo "<script>window.location='module_manager.php';</script>";
-	die;
-} else if ($fromform=$mform->get_data()) {
+$this->_form = new block_ckc_requests_manager_module_manager_form();
 
-} else {
-
+if ($this->_form->is_cancelled() === true) {
+    echo "<script>window.location='module_manager.php';</script>";
+    die;
 }
 
-$mform->display();
-$mform->focus();
-$mform->focus();
+$this->_form->display();
+$this->_form->focus();
+$this->_form->focus();
 echo $OUTPUT->footer();
 ?>
 <script src="js/bootstrap.min.js"/>

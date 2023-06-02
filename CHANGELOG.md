@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 - File: CONTRIBUTING.md
 
 ### Updated
-- Refactored block_cmanager.php
+- Refactored block_ckc_requests_manager.php
 - Block can be placed on any page.
 - You can no longer add more than one instance of the block to a page.
 - Modernized look of user interface (look and feel).
@@ -104,7 +104,7 @@ All notable changes to this project will be documented in this file.
 ## [4.3] 2015-05-25
 - Fixed permissions in access.php.
 - Updated readme.txt with quick guide on permissions
-- Changed block_cmanager to work on permissions rather than admin privs
+- Changed block_ckc_requests_manager to work on permissions rather than admin privs
 - Deleted duplicate cmanager folder
 - Updated icon set
 - Display database record ID for each request rather than counter

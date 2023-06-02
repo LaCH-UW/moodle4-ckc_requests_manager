@@ -1,126 +1,149 @@
 <?php
-// ---------------------------------------------------------
-// block_cmanager is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// block_cmanager is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-//
-// COURSE REQUEST MANAGER BLOCK FOR MOODLE
-// by Kyle Goslin & Daniel McSweeney
-// Copyright 2012-2018 - Institute of Technology Blanchardstown.
-// ---------------------------------------------------------
+
 /**
  * COURSE REQUEST MANAGER
-  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @copyright  2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @category  Block
+ * @package   RequestsManager
+ * @author    Marcin Zbiegień <m.zbiegien@uw.edu.pl>
+ * @copyright 2023 UW
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @link      https://uw.edu.pl
  */
-require_once("../../config.php");
-global $CFG, $DB;
-$formPath = "$CFG->libdir/formslib.php";
-require_once($formPath);
+require_once '../../config.php';
+
+require_once $GLOBALS['CFG']->libdir.'/formslib.php';
+
 require_login();
-require_once('lib/displayLists.php');
 
-/** Navigation Bar **/
+require_once 'lib/displayLists.php';
+
+// Navigation Bar.
 $PAGE->navbar->ignore_active();
-$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_cmanager'), new moodle_url('/blocks/cmanager/module_manager.php'));
-$PAGE->navbar->add(get_string('viewsummary', 'block_cmanager'));
+$moduleMgrUrl = new moodle_url('/blocks/ckc_requests_manager/module_manager.php');
+$PAGE->navbar->add(
+    get_string('cmanagerDisplay', 'block_ckc_requests_manager'),
+    $moduleMgrUrl
+);
+$PAGE->navbar->add(get_string('viewsummary', 'block_ckc_requests_manager'));
 
-$PAGE->set_url('/blocks/cmanager/view_summary.php');
+$PAGE->set_url('/blocks/ckc_requests_manager/view_summary.php');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('viewsummary', 'block_cmanager'));
-$PAGE->set_title(get_string('viewsummary', 'block_cmanager'));
+$PAGE->set_heading(get_string('viewsummary', 'block_ckc_requests_manager'));
+$PAGE->set_title(get_string('viewsummary', 'block_ckc_requests_manager'));
+
 echo $OUTPUT->header();
 
 
-if (isset($_GET['id'])) {
-    $mid = required_param('id', PARAM_INT);
+$mid = $_SESSION['mid'];
+
+if (isset($_GET['id']) === true) {
+    $mid             = required_param('id', PARAM_INT);
     $_SESSION['mid'] = $mid;
-} else {
-    $mid = $_SESSION['mid'];
 }
 
 /**
  * Course request form
  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @category  Block
+ * @package   RequestsManager
+ * @author    Marcin Zbiegień <m.zbiegien@uw.edu.pl>
+ * @copyright 2023 UW
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @link      https://uw.edu.pl
  */
-class block_cmanager_view_summary_form extends moodleform {
+class block_ckc_requests_manager_view_summary_form extends moodleform
+{
 
-    function definition() {
 
-        global $CFG;
-        global $currentSess;
+    /**
+     * Form content definition.
+     *
+     * @return void
+     *
+     * @throws coding_exception On errors.
+     * @throws dml_exception On errors.
+     */
+    public function definition()
+    {
         global $mid;
-        global $USER, $DB;
 
+        $rec = $GLOBALS['DB']->get_record(
+            'block_ckc_requests_manager_records',
+            ['id' => $mid]
+        );
+        // Don't forget the underscore!
+        // Page description text.
+        $this->_form->addElement(
+            'html',
+            '<p><a href="module_manager.php" class="btn btn-default"><img src="icons/back.png" alt=""> '.get_string(
+                'back',
+                'block_ckc_requests_manager'
+            ).'</a></p>'
+        );
 
+        $rec            = $GLOBALS['DB']->get_recordset_select(
+            'block_ckc_requests_manager_records',
+            'id = '.$mid
+        );
+        $displayModHTML = block_ckc_requests_manager_display_admin_list(
+            $rec,
+            false,
+            false,
+            false,
+            ''
+        );
 
-        $rec =  $DB->get_record('block_cmanager_records', array('id'=>$mid));
-        $mform =& $this->_form; // Don't forget the underscore!
-
-        // Page description text
-        $mform->addElement('html', '<p><a href="module_manager.php" class="btn btn-default"><img src="icons/back.png" alt=""> '.get_string('back','block_cmanager').'</a></p>');
-
-        $rec = $DB->get_recordset_select('block_cmanager_records', 'id = ' . $mid);
-        $displayModHTML = block_cmanager_display_admin_list($rec, false, false, false, '');
-
-        $mform->addElement('html', ''. $displayModHTML . '');
-        $mform->addElement('html', '<p></p>&nbsp;');
-        $whereQuery = "instanceid = '$mid' ORDER BY id DESC";
-        $modRecords = $DB->get_recordset_select('block_cmanager_comments', $whereQuery);
+        $this->_form->addElement('html', ''.$displayModHTML.'');
+        $this->_form->addElement('html', '<p></p>&nbsp;');
+        $whereQuery = "instanceid = '".$mid."' ORDER BY id DESC";
+        $modRecords = $GLOBALS['DB']->get_recordset_select(
+            'block_ckc_requests_manager_comments',
+            $whereQuery
+        );
         $htmlOutput = '';
 
-        foreach($modRecords as $record){
-            // Get the username of the person
-            $username = $DB->get_field('user', 'username', array('id'=>$record->createdbyid));
+        foreach ($modRecords as $record) {
+            $username = $GLOBALS['DB']->get_field(
+                'user',
+                'username',
+                ['id' => $record->createdbyid]
+            );
 
-            $htmlOutput .='	<tr>';
-            $htmlOutput .=' <td>' . $record->dt . '</td>';
-            $htmlOutput .=' <td>' . $record->message . '</td>';
-            $htmlOutput .=' <td>' . $username .'</td>';
-            $htmlOutput .=' </tr>';
+            $htmlOutput .= '	<tr>';
+            $htmlOutput .= ' <td>'.$record->dt.'</td>';
+            $htmlOutput .= ' <td>'.$record->message.'</td>';
+            $htmlOutput .= ' <td>'.$username.'</td>';
+            $htmlOutput .= ' </tr>';
         }
 
-        $mform->addElement('html', '<h2>' . get_string('comments') . '</h2>');
-        $mform->addElement('html', '
+        $this->_form->addElement('html', '<h2>'.get_string('comments').'</h2>');
+        $this->_form->addElement(
+            'html',
+            '
             <table class="table-striped w-75">
                 <tr>
-                    <th>'.get_string('comments_date','block_cmanager').'</td>
-                    <th>'.get_string('comments_message','block_cmanager').'</td>
-                    <th>'.get_string('comments_from','block_cmanager').'</td>
+                    <th>'.get_string('comments_date', 'block_ckc_requests_manager').'</td>
+                    <th>'.get_string('comments_message', 'block_ckc_requests_manager').'</td>
+                    <th>'.get_string('comments_from', 'block_ckc_requests_manager').'</td>
                 </tr>
-                ' . $htmlOutput . '
+                '.$htmlOutput.'
             </table>
-        ');
-	}
-}
+        '
+        );
+
+    }//end definition()
 
 
-$mform = new block_cmanager_view_summary_form();
+}//end class
 
+$this->_form = new block_ckc_requests_manager_view_summary_form();
 
-if ($mform->is_cancelled()) {
-}
-
-else if ($fromform=$mform->get_data()) {
-
-} else {
-		$mform->focus();
-		$mform->set_data($mform);
-		$mform->display();
- 		echo $OUTPUT->footer();
+if (false === $this->_form->is_cancelled()
+    && empty($this->_form->get_data()) === true
+) {
+        $this->_form->focus();
+        $this->_form->set_data($this->_form);
+        $this->_form->display();
+         echo $OUTPUT->footer();
 }

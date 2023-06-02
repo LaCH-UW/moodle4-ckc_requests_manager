@@ -1,11 +1,11 @@
 <?php
 // ---------------------------------------------------------
-// block_cmanager is free software: you can redistribute it and/or modify
+// block_ckc_requests_manager is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// block_cmanager is distributed in the hope that it will be useful,
+// block_ckc_requests_manager is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,33 +19,33 @@
 // ---------------------------------------------------------
 /**
  * COURSE REQUEST MANAGER
-  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @copyright  2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @package   block_ckc_requests_manager
+ * @copyright 2018 Kyle Goslin, Daniel McSweeney
+ * @copyright 2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once("../../../config.php");
-global $CFG;
-$formPath = "$CFG->libdir/formslib.php";
-require_once($formPath);
+require_once '../../../config.php';
+global $GLOBALS['CFG'];
+$formPath = "$GLOBALS['CFG']->libdir/formslib.php";
+require_once $formPath;
 require_login();
 
-/** Navigation Bar **/
+// Navigation Bar
 $PAGE->navbar->ignore_active();
-$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_cmanager'), new moodle_url('/blocks/cmanager/cmanager_admin.php'));
-$PAGE->navbar->add(get_string('denycourse', 'block_cmanager'));
-$PAGE->set_url('/blocks/cmanager/admin/deny_course.php');
+$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_ckc_requests_manager'), new moodle_url('/blocks/ckc_requests_manager/cmanager_admin.php'));
+$PAGE->navbar->add(get_string('denycourse', 'block_ckc_requests_manager'));
+$PAGE->set_url('/blocks/ckc_requests_manager/admin/deny_course.php');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('pluginname', 'block_cmanager'));
-$PAGE->set_title(get_string('pluginname', 'block_cmanager'));
+$PAGE->set_heading(get_string('pluginname', 'block_ckc_requests_manager'));
+$PAGE->set_title(get_string('pluginname', 'block_ckc_requests_manager'));
 echo $OUTPUT->header();
 
 
 $context = context_system::instance();
-if (has_capability('block/cmanager:denyrecord',$context)) {
+if (has_capability('block/cmanager:denyrecord', $context)) {
 } else {
-  print_error(get_string('cannotdenyrecord', 'block_cmanager'));
+    print_error(get_string('cannotdenyrecord', 'block_ckc_requests_manager'));
 }
 
 
@@ -54,36 +54,38 @@ if (has_capability('block/cmanager:denyrecord',$context)) {
 
 
 <?php
-
-if(isset($_GET['id'])){
-	$mid = required_param('id', PARAM_INT);
-	$_SESSION['mid'] = $mid;
+if (isset($_GET['id'])) {
+    $mid             = required_param('id', PARAM_INT);
+    $_SESSION['mid'] = $mid;
 } else {
-
-	$mid = $_SESSION['mid'];
+    $mid = $_SESSION['mid'];
 }
 
-class block_cmanager_deny_form extends moodleform {
-
-    function definition() {
-    global $CFG;
-    global $currentSess;
-	global $mid;
-	global $USER, $DB;
-
-	$currentRecord =  $DB->get_record('block_cmanager_records', array('id'=>$currentSess));
-	$mform =& $this->_form; // Don't forget the underscore!
-
-	$denytext1 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext1'");
-	$denytext2 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext2'");
-	$denytext3 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext3'");
-	$denytext4 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext4'");
-	$denytext5 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext5'");
-	$mform->addElement('header', 'mainheader', '<span style="font-size:18px">'. get_string('denyrequest_Title','block_cmanager'). '</span>');
+class block_ckc_requests_manager_deny_form extends moodleform
+{
 
 
-	// Page description text
-	$mform->addElement('html', '<p><a href="../cmanager_admin.php" class="btn btn-default"><img src="../icons/back.png" alt=""> '.get_string('back','block_cmanager').'</a></p>
+    function definition()
+    {
+        global $GLOBALS['CFG'];
+        global $currentSess;
+        global $mid;
+        global $GLOBALS['USER'], $GLOBALS['DB'];
+
+        $currentRecord = $GLOBALS['DB']->get_record('block_ckc_requests_manager_records', ['id' => $currentSess]);
+        $mform         =& $this->_form;
+        // Don't forget the underscore!
+        $denytext1 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext1'");
+        $denytext2 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext2'");
+        $denytext3 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext3'");
+        $denytext4 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext4'");
+        $denytext5 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext5'");
+        $mform->addElement('header', 'mainheader', '<span style="font-size:18px">'.get_string('denyrequest_Title', 'block_ckc_requests_manager').'</span>');
+
+        // Page description text
+        $mform->addElement(
+            'html',
+            '<p><a href="../cmanager_admin.php" class="btn btn-default"><img src="../icons/back.png" alt=""> '.get_string('back', 'block_ckc_requests_manager').'</a></p>
 
 		<script>
 		function addSelectedText(num){
@@ -184,151 +186,142 @@ class block_cmanager_deny_form extends moodleform {
 	      </form>
 		</div>
 		<div id="right">
- 			'.get_string('denyrequest_reason','block_cmanager').'.
+ 			'.get_string('denyrequest_reason', 'block_ckc_requests_manager').'.
  			<p></p>
 		<textarea id="newcomment" name="newcomment" rows="30" cols="52" maxlength="280"></textarea>
 		<p></p>
 	</div>
-		<input class="btn btn-default" type="submit" value="'.get_string('denyrequest_Btn','block_cmanager').'"/>
+		<input class="btn btn-default" type="submit" value="'.get_string('denyrequest_Btn', 'block_ckc_requests_manager').'"/>
 
 
 
 
 		</div>
 		</center>
-	');
+	'
+        );
+
+    }//end definition()
 
 
+}//end class
 
-
-
-
-	}
-}
 
 /**
-* Get custom text
-*/
-function customText(){
+ * Get custom text
+ */
+function customText()
+{
+    global $GLOBALS['DB'];
 
-	global $DB;
-
-	$optionHTML = 'hh';
-	// Deny Text
-    $denytext1 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext1'");
-    if(!empty($denytext1)){
+    $optionHTML = 'hh';
+    // Deny Text
+    $denytext1 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext1'");
+    if (!empty($denytext1)) {
         $optionHTML .= '<option value="'.$denytext1.'">'.$denytext1.'</option>';
     }
 
-    $denytext2 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext2'");
-    if(!empty($denytext2)){
+    $denytext2 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext2'");
+    if (!empty($denytext2)) {
         $optionHTML .= '<option value="'.$denytext2.'">'.$denytext2.'</option>';
     }
-    $denytext3 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext3'");
 
-    if(!empty($denytext3)){
+    $denytext3 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext3'");
+
+    if (!empty($denytext3)) {
         $optionHTML .= '<option value="'.$denytext3.'">'.$denytext3.'</option>';
     }
 
-    $denytext4 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext4'");
-    if(!empty($denytext4)){
+    $denytext4 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext4'");
+    if (!empty($denytext4)) {
         $optionHTML .= '<option value="'.$denytext4.'">'.$denytext4.'</option>';
     }
 
-    $denytext5 = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'denytext5'");
-    if(!empty($denytext5)){
+    $denytext5 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'denytext5'");
+    if (!empty($denytext5)) {
         $optionHTML .= '<option value="'.$denytext5.'">'.$denytext5.'</option>';
     }
 
+    return $optionHTML;
 
-	return $optionHTML;
-    }
-
-   $mform = new block_cmanager_deny_form();//name of the form you defined in file above.
+}//end customText()
 
 
-
-   if ($mform->is_cancelled()){
-
-	echo "<script>window.location='../cmanager_admin.php';</script>";
-			die;
-
-  } else if ($fromform=$mform->get_data()){
-		global $USER;
-
-  } else {
-
-
-
-
-		$mform->focus();
-	    $mform->set_data($mform);
-	    $mform->display();
-	  	echo $OUTPUT->footer();
-
+   $mform = new block_ckc_requests_manager_deny_form();
+// name of the form you defined in file above.
+if ($mform->is_cancelled()) {
+    echo "<script>window.location='../cmanager_admin.php';</script>";
+            die;
+} else if ($fromform = $mform->get_data()) {
+       global $GLOBALS['USER'];
+} else {
+        $mform->focus();
+        $mform->set_data($mform);
+        $mform->display();
+          echo $OUTPUT->footer();
 }
+
+
 /**
-* Get a username for a given ID from Moodle
-*/
-function block_cmanager_get_username($id){
+ * Get a username for a given ID from Moodle
+ */
+function block_ckc_requests_manager_get_username($id)
+{
+    global $GLOBALS['DB'];
+    return $GLOBALS['USER']name = get_field('user', 'username', ['id' => $id]);
 
-	global $DB;
-	return $username = get_field('user', 'username', array('id'=>$id));
-
-}
-
-
-if($_POST){
-	global $CFG, $DB;
-
-		// Send Email to all concerned about the request deny.
-		require_once('../cmanager_email.php');
+}//end block_ckc_requests_manager_get_username()
 
 
-		$message = required_param('newcomment', PARAM_TEXT);
+if ($_POST) {
+    global $GLOBALS['CFG'], $GLOBALS['DB'];
+
+        // Send Email to all concerned about the request deny.
+        include_once '../cmanager_email.php';
 
 
-
-		// update the request record
-		$newrec = new stdClass();
-		$newrec->id = $mid;
-		$newrec->status = 'REQUEST DENIED';
-		$DB->update_record('block_cmanager_records', $newrec);
-
-		// Add a comment to the module
-		$userid = $USER->id;
-		$newrec = new stdClass();
-		$newrec->instanceid = $mid;
-		$newrec->createdbyid = $userid;
-		$newrec->message = $message;
-		$newrec->dt = date("Y-m-d H:i:s");
-		$DB->insert_record('block_cmanager_comments', $newrec, false);
+        $message = required_param('newcomment', PARAM_TEXT);
 
 
 
-		$currentRecord =  $DB->get_record('block_cmanager_records', array('id'=>$mid));
+        // update the request record
+        $newrec         = new stdClass();
+        $newrec->id     = $mid;
+        $newrec->status = 'REQUEST DENIED';
+        $GLOBALS['DB']->update_record('block_ckc_requests_manager_records', $newrec);
 
-		$requesterId = 	$currentRecord->createdbyid; // Store the ID of the person who made the request
-
-
-		$replaceValues = array();
-	    $replaceValues['[course_code'] = $currentRecord->modcode;
-	    $replaceValues['[course_name]'] = $currentRecord->modname;
-	    //$replaceValues['[p_code]'] = $currentRecord->progcode;
-	    //$replaceValues['[p_name]'] = $currentRecord->progname;
-	    $replaceValues['[e_key]'] = '';
-	    $replaceValues['[full_link]'] = $CFG->wwwroot.'/blocks/cmanager/comment.php?id=' . $mid;
-	    $replaceValues['[loc]'] = '';
-	    $replaceValues['[req_link]'] = $CFG->wwwroot.'/blocks/cmanager/view_summary.php?id=' . $mid;
-
-
-		block_cmanager_send_deny_email_user($message, $requesterId, $mid, $replaceValues);
-
-	   	block_cmanager_send_deny_email_admin($message, $mid, $replaceValues);
+        // Add a comment to the module
+        $GLOBALS['USER']id   = $GLOBALS['USER']->id;
+        $newrec              = new stdClass();
+        $newrec->instanceid  = $mid;
+        $newrec->createdbyid = $GLOBALS['USER']id;
+        $newrec->message     = $message;
+        $newrec->dt          = date('Y-m-d H:i:s');
+        $GLOBALS['DB']->insert_record('block_ckc_requests_manager_comments', $newrec, false);
 
 
-		echo "<script> window.location = '../cmanager_admin.php';</script>";
 
-}
+        $currentRecord = $GLOBALS['DB']->get_record('block_ckc_requests_manager_records', ['id' => $mid]);
 
-?>
+        $requesterId = $currentRecord->createdbyid;
+    // Store the ID of the person who made the request
+        $replaceValues                  = [];
+        $replaceValues['[course_code']  = $currentRecord->modcode;
+        $replaceValues['[course_name]'] = $currentRecord->modname;
+        // $replaceValues['[p_code]'] = $currentRecord->progcode;
+        // $replaceValues['[p_name]'] = $currentRecord->progname;
+        $replaceValues['[e_key]']     = '';
+        $replaceValues['[full_link]'] = $GLOBALS['CFG']->wwwroot.'/blocks/ckc_requests_manager/comment.php?id='.$mid;
+        $replaceValues['[loc]']       = '';
+        $replaceValues['[req_link]']  = $GLOBALS['CFG']->wwwroot.'/blocks/ckc_requests_manager/view_summary.php?id='.$mid;
+
+
+        block_ckc_requests_manager_send_deny_email_user($message, $requesterId, $mid, $replaceValues);
+
+           block_ckc_requests_manager_send_deny_email_admin($message, $mid, $replaceValues);
+
+
+        echo "<script> window.location = '../cmanager_admin.php';</script>";
+}//end if
+
+

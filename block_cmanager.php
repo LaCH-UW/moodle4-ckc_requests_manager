@@ -15,55 +15,62 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains block_cmanager
+ * Contains block_ckc_requests_manager
  *
- * @package    block_cmanager
- * @copyright  2012-2018 Kyle Goslin, Daniel McSweeney (Institute of Technology Blanchardstown)
- * @copyright  2021-2022 TNG Consulting Inc.
- * @author     Kyle Goslin, Daniel McSweeney
- * @author     Michael Milette
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_ckc_requests_manager
+ * @copyright 2012-2018 Kyle Goslin, Daniel McSweeney (Institute of Technology Blanchardstown)
+ * @copyright 2021-2022 TNG Consulting Inc.
+ * @author    Kyle Goslin, Daniel McSweeney
+ * @author    Michael Milette
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
  /**
   * A block which displays the Course Request Manager
   *
-  * @package    block_cmanager
-  * @copyright  2022 TNG Consulting Inc.
-  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+  * @package   block_ckc_requests_manager
+  * @copyright 2022 TNG Consulting Inc.
+  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
-class block_cmanager extends block_list {
+class block_ckc_requests_manager extends block_list
+{
+
+
     /**
      * Initialize the block.
      *
      * @return void
      */
-    function init() {
-        $this->title = get_string('plugindesc', 'block_cmanager');
-    }
+    function init()
+    {
+        $this->title = get_string('plugindesc', 'block_ckc_requests_manager');
+
+    }//end init()
+
 
     /**
      * Get the content displayed in the block.
      *
      * @return object Contains the content and footer for the block.
      */
-    function get_content() {
-        if ($this->content !== NULL) {
+    function get_content()
+    {
+        if ($this->content !== null) {
             return $this->content;
         }
 
-        $this->content =  new stdClass;
-        $this->content->items = array();
-        $this->content->icons = array();
+        $this->content         = new stdClass;
+        $this->content->items  = [];
+        $this->content->icons  = [];
         $this->content->footer = '';
 
-        if (isloggedin() and !isguestuser()) {   // Show the block if logged-in.
-            global $DB, $CFG;
-            $context = context_system::instance();
-            $requests = $DB->count_records('block_cmanager_records', array('status'=>'PENDING'));
+        if (isloggedin() and !isguestuser()) {
+            // Show the block if logged-in.
+            global $GLOBALS['DB'], $GLOBALS['CFG'];
+            $context  = context_system::instance();
+            $requests = $GLOBALS['DB']->count_records('block_ckc_requests_manager_records', ['status' => 'PENDING']);
 
             // For regular users.
-
             // Make a request.
             $this->content->items[] = $this->builditem('block_request', 'course_request.php', ['mode' => '1'], 'makereq.png');
             // Manage your requests.
@@ -72,7 +79,6 @@ class block_cmanager extends block_list {
             $this->content->items[] = $this->builditem('myarchivedrequests', 'module_manager_history.php', [], 'arch_req.png');
 
             // For administrators.
-
             if (has_capability('block/cmanager:approverecord', $context)) {
                 // Request queue.
                 $this->content->items[] = $this->builditem('block_admin', 'cmanager_admin.php', [], 'queue.png', "[$requests]");
@@ -81,56 +87,80 @@ class block_cmanager extends block_list {
                 // All archived requests.
                 $this->content->items[] = $this->builditem('allarchivedrequests', 'cmanager_admin_arch.php', [], 'all_arch.png');
             }
-        }
+        }//end if
+
         return $this->content;
-    }
+
+    }//end get_content()
+
 
     /**
      * Allow the block to be placed on any page.
      *
      * @return void
      */
-    function applicable_formats() {
-        return array('all' => true);
-    }
+    function applicable_formats()
+    {
+        return ['all' => true];
+
+    }//end applicable_formats()
+
 
     /**
      * Disable ability to add multiple instances to a page.
      *
-     * @return bool false
+     * @return boolean false
      */
-    function instance_allow_multiple() {
+    function instance_allow_multiple()
+    {
         return false;
-    }
+
+    }//end instance_allow_multiple()
+
 
     /**
      * Enable plugin settings.php.
      *
-     * @return bool true
+     * @return boolean true
      */
-    function has_config() {
+    function has_config()
+    {
         return true;
-    }
+
+    }//end has_config()
+
 
     /**
      * Enable block instance's settings.
      *
-     * @return bool true
+     * @return boolean true
      */
-    function instance_allow_config() {
+    function instance_allow_config()
+    {
         return true;
-    }
 
-    function builditem($identifier, $url, $query = [], $icon = '', $identifierparam = '') {
-        global $CFG;
+    }//end instance_allow_config()
 
-        $string = get_string($identifier, 'block_cmanager') . rtrim(' ' . $identifierparam);
-        $icon = html_writer::empty_tag('img', [
-            'src' => $CFG->wwwroot . '/blocks/cmanager/icons/' . $icon,
-            'alt' => '',
-            'class' => 'icon'
-        ]);
 
-        return html_writer::link(new moodle_url('/blocks/cmanager/' . $url, $query), $icon . $string);
-    }
-} // End class.
+    function builditem($identifier, $url, $query=[], $icon='', $identifierparam='')
+    {
+        global $GLOBALS['CFG'];
+
+        $string = get_string($identifier, 'block_ckc_requests_manager').rtrim(' '.$identifierparam);
+        $icon   = html_writer::empty_tag(
+            'img',
+            [
+                'src'   => $GLOBALS['CFG']->wwwroot.'/blocks/ckc_requests_manager/icons/'.$icon,
+                'alt'   => '',
+                'class' => 'icon',
+            ]
+        );
+
+        return html_writer::link(new moodle_url('/blocks/ckc_requests_manager/'.$url, $query), $icon.$string);
+
+    }//end builditem()
+
+
+}//end class
+
+ // End class.

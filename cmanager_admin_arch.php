@@ -1,11 +1,11 @@
 <?php
 // ---------------------------------------------------------
-// block_cmanager is free software: you can redistribute it and/or modify
+// block_ckc_requests_manager is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// block_cmanager is distributed in the hope that it will be useful,
+// block_ckc_requests_manager is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,38 +19,38 @@
 // ---------------------------------------------------------
 /**
  * COURSE REQUEST MANAGER
-  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @copyright  2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @package   block_ckc_requests_manager
+ * @copyright 2018 Kyle Goslin, Daniel McSweeney
+ * @copyright 2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once("../../config.php");
-global $CFG, $DB;
-$formPath = "$CFG->libdir/formslib.php";
-require_once($formPath);
+require_once '../../config.php';
+global $GLOBALS['CFG'], $GLOBALS['DB'];
+$formPath = "$GLOBALS['CFG']->libdir/formslib.php";
+require_once $formPath;
 require_login();
-require_once('../../course/lib.php');
-require_once('lib/displayLists.php');
-require_once('lib/boot.php');
+require_once '../../course/lib.php';
+require_once 'lib/displayLists.php';
+require_once 'lib/boot.php';
 
-/** Navigation Bar **/
+// Navigation Bar
 $PAGE->navbar->ignore_active();
-$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_cmanager'), new moodle_url('/blocks/cmanager/cmanager_admin.php'));
-$PAGE->navbar->add(get_string('allarchivedrequests', 'block_cmanager'));
+$PAGE->navbar->add(get_string('cmanagerDisplay', 'block_ckc_requests_manager'), new moodle_url('/blocks/ckc_requests_manager/cmanager_admin.php'));
+$PAGE->navbar->add(get_string('allarchivedrequests', 'block_ckc_requests_manager'));
 
 
-$PAGE->set_url('/blocks/cmanager/cmanager_admin.php');
+$PAGE->set_url('/blocks/ckc_requests_manager/cmanager_admin.php');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('allarchivedrequests', 'block_cmanager'));
-$PAGE->set_title(get_string('allarchivedrequests', 'block_cmanager'));
+$PAGE->set_heading(get_string('allarchivedrequests', 'block_ckc_requests_manager'));
+$PAGE->set_title(get_string('allarchivedrequests', 'block_ckc_requests_manager'));
 echo $OUTPUT->header();
 
 $context = context_system::instance();
 
-if (has_capability('block/cmanager:approverecord',$context)) {
+if (has_capability('block/cmanager:approverecord', $context)) {
 } else {
-       print_error(get_string('cannotviewrecords', 'block_cmanager'));
+       print_error(get_string('cannotviewrecords', 'block_ckc_requests_manager'));
 }
 
 ?>
@@ -77,9 +77,9 @@ function saveChangedCategory(fieldvalue, recordId){
 
 
     $.post("ajax_functions.php", { type: 'updatecategory', value: fieldvalue, recId: recordId },
-    		   function(data) {
-    		     alert("Changes have been saved!");
-    		   });
+               function(data) {
+                 alert("Changes have been saved!");
+               });
 
 
 }
@@ -88,51 +88,49 @@ function saveChangedCategory(fieldvalue, recordId){
 
 </script>
 <style>
-	tr:nth-child(odd)		{ background-color:#eee; }
-	tr:nth-child(even)		{ background-color:#fff; }
+    tr:nth-child(odd)        { background-color:#eee; }
+    tr:nth-child(even)        { background-color:#fff; }
  </style>
 <?php
-
-
-
 /**
-* Admin Arch
-*
-* Display admin arch page
-* @package    block_cmanager
-* @copyright  2018 Kyle Goslin, Daniel McSweeney
-* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
-class block_cmanager_adminarch_form extends moodleform {
+ * Admin Arch
+ *
+ * Display admin arch page
+ *
+ * @package   block_ckc_requests_manager
+ * @copyright 2018 Kyle Goslin, Daniel McSweeney
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class block_ckc_requests_manager_adminarch_form extends moodleform
+{
 
-    function definition() {
-        global $CFG;
-        global $USER, $DB;
-        $mform =& $this->_form; // Don't forget the underscore!
 
-      	$selectQuery = "status = 'PENDING' ORDER BY id ASC";
+    function definition()
+    {
+        global $GLOBALS['CFG'];
+        global $GLOBALS['USER'], $GLOBALS['DB'];
+        $mform =& $this->_form;
+        // Don't forget the underscore!
+          $selectQuery = "status = 'PENDING' ORDER BY id ASC";
 
         // If search is enabled then use the
         // search parameters
         if ($_POST && isset($_POST['search'])) {
-     	    $searchText = required_param('searchtext', PARAM_TEXT);
-    		$searchType = required_param('searchtype', PARAM_TEXT);
+             $searchText = required_param('searchtext', PARAM_TEXT);
+            $searchType  = required_param('searchtype', PARAM_TEXT);
 
             if (!empty($searchText) && !empty($searchType)) {
+                if ($searchType == 'code') {
+                    $selectQuery = "`modcode` LIKE '%{$searchText}%'";
+                } else if ($searchType == 'title') {
+                    $selectQuery = "`modname` LIKE '%{$searchText}%'";
+                } else if ($searchType == 'requester') {
+                    $selectQuery = '`createdbyid` = (Select id from '.$GLOBALS['CFG']->prefix."user where `firstname` LIKE '%{$searchText}%' OR `lastname` LIKE '%{$searchText}%' OR `username` LIKE '%{$searchText}%')";
+                }
+            }
+        }
 
-    			if ($searchType == 'code') {
-    				$selectQuery = "`modcode` LIKE '%{$searchText}%'";
-    			}
-    			else if ($searchType == 'title') {
-    				$selectQuery = "`modname` LIKE '%{$searchText}%'";
-    			}
-    			else if ($searchType == 'requester') {
-    				$selectQuery = "`createdbyid` = (Select id from ".$CFG->prefix."user where `firstname` LIKE '%{$searchText}%' OR `lastname` LIKE '%{$searchText}%' OR `username` LIKE '%{$searchText}%')";
-    			}
-    		}
-	}
-
- echo "
+        echo "
  <script>
  // Open the selected archived request page
  function goToPage(){
@@ -141,119 +139,108 @@ class block_cmanager_adminarch_form extends moodleform {
  }
 </script>";
 
+        // Arch Requests Dropdow
+        $page1_fieldname1 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname='page1_fieldname1'");
+        $page1_fieldname2 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname='page1_fieldname2'");
 
-// Arch Requests Dropdow
-$page1_fieldname1 = $DB->get_field_select('block_cmanager_config', 'value', "varname='page1_fieldname1'");
-$page1_fieldname2 = $DB->get_field_select('block_cmanager_config', 'value', "varname='page1_fieldname2'");
+        $additionalSearchQuery = '';
 
+        if ($_POST && isset($_POST['archsearch'])) {
+            $archSearchText = required_param('archsearchtext', PARAM_TEXT);
+            $archSearchType = required_param('archsearchtype', PARAM_TEXT);
 
-$additionalSearchQuery = '';
+            if (!empty($archSearchText) && !empty($archSearchType)) {
+                if ($archSearchType == 'code') {
+                    $additionalSearchQuery = " AND `modcode` LIKE '%{$archSearchText}%'";
+                } else if ($archSearchType == 'title') {
+                    $additionalSearchQuery = " AND `modname` LIKE '%{$archSearchText}%'";
+                } else if ($archSearchType == 'requester') {
+                    $additionalSearchQuery = ' AND `createdbyid` = (Select id from '.$GLOBALS['CFG']->prefix."user where `firstname` LIKE '%{$archSearchText}%' OR `lastname` LIKE '%{$archSearchText}%' OR `username` LIKE '%{$archSearchText}%')";
+                }
+            }
+        }
 
-if ($_POST && isset($_POST['archsearch'])) {
-	$archSearchText = required_param('archsearchtext', PARAM_TEXT);
-    $archSearchType = required_param('archsearchtype', PARAM_TEXT);
+        $numberOfRecords = $GLOBALS['DB']->count_records_sql('SELECT count(id) FROM '.$GLOBALS['CFG']->prefix."block_ckc_requests_manager_records WHERE status = 'COMPLETE' OR status = 'REQUEST DENIED'".$additionalSearchQuery);
+        $numberOfPages   = (ceil($numberOfRecords / 10) - 1);
 
-	if (!empty($archSearchText) && !empty($archSearchType)) {
-        if($archSearchType == 'code') {
-		    $additionalSearchQuery = " AND `modcode` LIKE '%{$archSearchText}%'";
-		}
-		else if ($archSearchType == 'title') {
-					$additionalSearchQuery = " AND `modname` LIKE '%{$archSearchText}%'";
-				}
-        else if($archSearchType == 'requester') {
-            $additionalSearchQuery = " AND `createdbyid` = (Select id from ".$CFG->prefix."user where `firstname` LIKE '%{$archSearchText}%' OR `lastname` LIKE '%{$archSearchText}%' OR `username` LIKE '%{$archSearchText}%')";
-		}
-	}
-}
-
-
-$numberOfRecords = $DB->count_records_sql("SELECT count(id) FROM " . $CFG->prefix ."block_cmanager_records WHERE status = 'COMPLETE' OR status = 'REQUEST DENIED'" . $additionalSearchQuery);
-$numberOfPages = ceil($numberOfRecords / 10) -1;
-
-$selectedOption = '';
-$archRequestsDropdown = ' <br>View Page:
+        $selectedOption       = '';
+        $archRequestsDropdown = ' <br>View Page:
         <select onchange="goToPage();" name="pageNumber" id="pageNumber">';
 
-    $i = 1;
+        $i = 1;
 
-    while ($i < $numberOfPages+1) {
-	    if (isset($_GET['p'])) {
-	        if (required_param('p', PARAM_INT) == $i) {
-		        $selectedOption = 'selected = "yes"';
-	        }
+        while ($i < ($numberOfPages + 1)) {
+            if (isset($_GET['p'])) {
+                if (required_param('p', PARAM_INT) == $i) {
+                    $selectedOption = 'selected = "yes"';
+                }
+            }
+
+            $archRequestsDropdown .= '<option '.$selectedOption.' value="'.$i.'">'.$i.'</option>';
+            $i++;
+            $selectedOption = '';
         }
-        $archRequestsDropdown .= '<option ' .$selectedOption .' value="' . $i. '">' . $i. '</option>';
-        $i++;
-        $selectedOption = '';
-    }
 
-    if ($numberOfRecords % 2) {
+        if (($numberOfRecords % 2)) {
+        } else {
+            if (isset($_GET['p'])) {
+                if (required_param('p', PARAM_INT) == $i) {
+                    $selectedOption = 'selected = "yes"';
+                }
+            }
 
-    } else {
-	    if (isset($_GET['p'])) {
-	    if (required_param('p', PARAM_INT) == $i) {
-		    $selectedOption = 'selected = "yes"';
-	    }
-    }
-	$archRequestsDropdown .= '<option '. $selectedOption.'="' . $i. '"> ' . $i.'</option>';
-    }
+            $archRequestsDropdown .= '<option '.$selectedOption.'="'.$i.'"> '.$i.'</option>';
+        }
 
-    $archRequestsDropdown .= '</select>';
+        $archRequestsDropdown .= '</select>';
 
+        // -----------------------------------------------------------------------------------------
+        // if a page number is selected
+        if (isset($_GET['p'])) {
+            $selected_page_number = required_param('p', PARAM_INT);
+            $fromLimit            = (($selected_page_number - 1) * 10);
+            $toLimit              = ($fromLimit + 10);
+        } else {
+            $fromLimit = 0;
+            $toLimit   = 10;
+        }
 
-// -----------------------------------------------------------------------------------------
+        $pendingList = $GLOBALS['DB']->get_records_sql(
+            'SELECT * FROM '.$GLOBALS['CFG']->prefix."block_ckc_requests_manager_records
+                                     WHERE status = 'COMPLETE' OR status = 'REQUEST DENIED'".$additionalSearchQuery."
+                                     order by id desc LIMIT $fromLimit, $toLimit"
+        );
 
-// if a page number is selected
-if (isset($_GET['p'])) {
-    $selected_page_number = required_param('p', PARAM_INT);
-    $fromLimit = ($selected_page_number -1) * 10;
-    $toLimit = $fromLimit + 10;
-} else {
-    $fromLimit = 0;
-    $toLimit = 10;
-}
+        $outputHTML  = '';
+        $outputHTML .= $archRequestsDropdown;
+        $outputHTML .= '<h2>'.get_string('archivedrequests', 'block_ckc_requests_manager').'</h2>';
+        $outputHTML .= block_ckc_requests_manager_display_admin_list($pendingList, true, false, false, 'admin_arch');
+        $mform->addElement('html', $outputHTML);
 
-
-$pendingList = $DB->get_records_sql("SELECT * FROM ". $CFG->prefix ."block_cmanager_records
-                                     WHERE status = 'COMPLETE' OR status = 'REQUEST DENIED'" . $additionalSearchQuery . "
-                                     order by id desc LIMIT $fromLimit, $toLimit");
-
-$outputHTML = '';
-$outputHTML .= $archRequestsDropdown;
-$outputHTML .= '<h2>'. get_string('archivedrequests','block_cmanager').'</h2>';
-$outputHTML .= block_cmanager_display_admin_list($pendingList, true, false, false, 'admin_arch');
-$mform->addElement('html', $outputHTML);
+    }//end definition()
 
 
+    // Close the function
+}//end class
 
-
-    } // Close the function
-}  // Close the class
-
-
-
-$mform = new block_cmanager_adminarch_form();
+  // Close the class
+$mform = new block_ckc_requests_manager_adminarch_form();
 
 if ($mform->is_cancelled()) {
-
-
-} else if ($fromform=$mform->get_data()) {
-//this branch is where you process validated data.
-
+} else if ($fromform = $mform->get_data()) {
+    // this branch is where you process validated data.
 } else {
-
 }
 
 
 
 
 if ($_POST && isset($_POST['archsearch'])) {
+    $archSearchText = required_param('archsearchtext', PARAM_TEXT);
+    $archSearchType = required_param('archsearchtype', PARAM_TEXT);
 
-	$archSearchText = required_param('archsearchtext', PARAM_TEXT);
-	$archSearchType = required_param('archsearchtype', PARAM_TEXT);
-
-	echo "<script>document.getElementById('archsearchtext').value = '$archSearchText'; ";
-	echo "
+    echo "<script>document.getElementById('archsearchtext').value = '$archSearchText'; ";
+    echo "
 		var desiredValue = '$archSearchType';
 		var el = document.getElementById('archsearchtype');
 		for(var i=0; i<el.options.length; i++) {
@@ -264,8 +251,6 @@ if ($_POST && isset($_POST['archsearch'])) {
 		}
 		</script>
 		";
-
-
 }
 
 $mform->focus();
@@ -273,9 +258,12 @@ $mform->display();
 echo $OUTPUT->footer();
 
 // Modal for deleting requests
-echo generateGenericConfirm('delete_modal', get_string('alert', 'block_cmanager') ,
-                                    get_string('configure_delete', 'block_cmanager'),
-                                    get_string('yesDeleteRecords', 'block_cmanager'));
+echo generateGenericConfirm(
+    'delete_modal',
+    get_string('alert', 'block_ckc_requests_manager'),
+    get_string('configure_delete', 'block_ckc_requests_manager'),
+    get_string('yesDeleteRecords', 'block_ckc_requests_manager')
+);
 
 ?>
 <script>

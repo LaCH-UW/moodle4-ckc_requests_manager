@@ -1,5 +1,5 @@
 {
-    "name": "michael-milette/moodle-block_cmanager",
+    "name": "michael-milette/moodle-block_ckc_requests_manager",
     "type": "moodle-block",
     "description": "This Moodle plugin enables authenticated users to easily request the creation of a courses that they want to teach and for administrators to quickly approve and create it.",
     "license": "GPL-3.0+",
@@ -10,7 +10,7 @@
         "installer-name": "filtercodes"
     },
     "support": {
-        "issues": "https://github.com/michael-milette/moodle-block_cmanager/issues",
-        "source": "https://github.com/michael-milette/moodle-block_cmanager/"
+        "issues": "https://github.com/michael-milette/moodle-block_ckc_requests_manager/issues",
+        "source": "https://github.com/michael-milette/moodle-block_ckc_requests_manager/"
     }
 }

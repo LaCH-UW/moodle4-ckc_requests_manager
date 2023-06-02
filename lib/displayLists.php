@@ -1,11 +1,11 @@
 <?php
 // ---------------------------------------------------------
-// block_cmanager is free software: you can redistribute it and/or modify
+// block_ckc_requests_manager is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// block_cmanager is distributed in the hope that it will be useful,
+// block_ckc_requests_manager is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -20,7 +20,7 @@
 /**
  * COURSE REQUEST MANAGER
   *
- * @package    block_cmanager
+ * @package    block_ckc_requests_manager
  * @copyright  2018 Kyle Goslin, Daniel McSweeney
  * @copyright  2021-2022 Michael Milette (TNG Consulting Inc.), Daniel Keaman
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,23 +31,23 @@
  *  representations of queues etc.
  * ------------------------------------------------------------------------
  */
-if ($CFG->branch < 36) {
-    require_once($CFG->libdir.'/coursecatlib.php');
+if ($GLOBALS['CFG']->branch < 36) {
+    require_once($GLOBALS['CFG']->libdir.'/coursecatlib.php');
 }
 
 /**
  * Display a list of pending modules for the Admin
  *
  */
-function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $includeleftcheckbox,
+function block_ckc_requests_manager_display_admin_list($pendinglist, $includerightpanel, $includeleftcheckbox,
                                            $editcatavailable, $rightpaneltype) {
 
-    global $CFG, $DB;
+    global $GLOBALS['CFG'], $GLOBALS['DB'];
 
     $outputhtml = '';
 
-    $page1_fieldname1 = $DB->get_field_select('block_cmanager_config', 'value', "varname='page1_fieldname1'");
-    $page1_fieldname2 = $DB->get_field_select('block_cmanager_config', 'value', "varname='page1_fieldname2'");
+    $page1_fieldname1 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname='page1_fieldname1'");
+    $page1_fieldname2 = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname='page1_fieldname2'");
 
     $counter = 1;
 
@@ -57,22 +57,22 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
         $req_values = $rec->req_values;
 
         if (!empty($req_values)) {
-            if (!$course = $DB->get_record("course", array("id" => $req_values))) {
+            if (!$course = $GLOBALS['DB']->get_record("course", array("id" => $req_values))) {
                 // If the course doesn't exist anymore, just let the process continue..
             } else { // Otherwise, start the process
                 $context = context_course::instance($course->id);
                 if ($managerroles = get_config('', 'coursemanager')) {
                     $coursemanagerroles = explode(',', $managerroles);
                     foreach ($coursemanagerroles as $roleid) {
-                        $role = $DB->get_record('role', array('id' => $roleid));
+                        $role = $GLOBALS['DB']->get_record('role', array('id' => $roleid));
                         $canseehidden = has_capability('moodle/role:viewhiddenassigns', $context);
                         $roleid = (int) $roleid;
                         $namesarray = null;
-                        if ($users = get_role_users($roleid, $context, true, '', 'u.lastname ASC', $canseehidden)) {
+                        if ($GLOBALS['USER']s = get_role_users($roleid, $context, true, '', 'u.lastname ASC', $canseehidden)) {
 
-                            foreach ($users as $teacher) {
+                            foreach ($GLOBALS['USER']s as $teacher) {
                                 $fullname = fullname($teacher, has_capability('moodle/site:viewfullnames', $context));
-                                $namesarray[] = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' .
+                                $namesarray[] = '<a href="' . $GLOBALS['CFG']->wwwroot . '/user/view.php?id=' .
                                         $teacher->id . '&amp;course=' . SITEID . '">' . $fullname . '</a>';
                             }
                         }
@@ -86,9 +86,9 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
         } else {
             // Get the id from who created the record, and get their username
 
-            $fullname = $DB->get_field('user', 'username', array('id' => $rec->createdbyid));
+            $fullname = $GLOBALS['DB']->get_field('user', 'username', array('id' => $rec->createdbyid));
 
-            $lecturerhtml = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' .
+            $lecturerhtml = '<a href="' . $GLOBALS['CFG']->wwwroot . '/user/view.php?id=' .
                     $rec->createdbyid . '&amp;course=' . SITEID . '" id="namelink">' . $fullname . '</a>';
         }
 
@@ -97,7 +97,7 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
         $currentmodid = $rec->id;
 
         $wherequery = "instanceid = '$currentmodid'";
-        $modrecords = $DB->get_recordset_select('block_cmanager_comments', $wherequery);
+        $modrecords = $GLOBALS['DB']->get_recordset_select('block_ckc_requests_manager_comments', $wherequery);
 
         foreach ($modrecords as $record) {
 
@@ -108,18 +108,18 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
 
                 if ($pagename == 'module_manager.php') {
                     $latestComment .= '... <a href="comment.php?type=userq&id=' . $currentmodid . '">[' .
-                            get_string('viewmore', 'block_cmanager') . ']</a>';
+                            get_string('viewmore', 'block_ckc_requests_manager') . ']</a>';
 
                 } else {
                     $latestComment .= '... <a href="comment.php?type=adminq&id=' . $currentmodid . '">[' .
-                            get_string('viewmore', 'block_cmanager') . ']</a>';
+                            get_string('viewmore', 'block_ckc_requests_manager') . ']</a>';
                 }
             }
         }
 
         // Check if shortname exists
-        $shortnameexists = $DB->record_exists('course', array('shortname' => $rec->modcode));
-        $shortnameexistsmode = $DB->record_exists('course', array('shortname' => $rec->modcode . ' - ' . $rec->modmode));
+        $shortnameexists = $GLOBALS['DB']->record_exists('course', array('shortname' => $rec->modcode));
+        $shortnameexistsmode = $GLOBALS['DB']->record_exists('course', array('shortname' => $rec->modcode . ' - ' . $rec->modmode));
 
         $disabledhtml = '';
         if ($shortnameexists == 1 || $shortnameexistsmode == 1) {
@@ -135,12 +135,12 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
                         <input type="checkbox" id="' . $rec->id .
                             '" class="bulk-action-checkbox custom-control-input mt-3" name="groupedcheck" onClick="addIdToList(' . $rec->id .
                             ')" value="' . $rec->id . '" ' . $disabledhtml . '/>
-                        <label for="' . $rec->id . '" class="custom-control-label">' . get_string('Request', 'block_cmanager') . ' ID #' . $rec->id . ': ' . format_string($rec->modcode) . '</label>
+                        <label for="' . $rec->id . '" class="custom-control-label">' . get_string('Request', 'block_ckc_requests_manager') . ' ID #' . $rec->id . ': ' . format_string($rec->modcode) . '</label>
                     </h2>
                 </div>';
         } else {
             $outputhtml .= '
-            <h2 class="border-top mt-5">' . get_string('Request', 'block_cmanager') . ' ID #' . $rec->id . ': ' . format_string($rec->modcode) . '</h2>
+            <h2 class="border-top mt-5">' . get_string('Request', 'block_ckc_requests_manager') . ' ID #' . $rec->id . ': ' . format_string($rec->modcode) . '</h2>
             </div>';
         }
             // ---------- Additional Controls -------------------------------
@@ -149,12 +149,12 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
                 if ($rightpaneltype == 'admin_queue') {
                     $outputhtml .= '
 						<div class="btn-group" padding-bottom:6.5px" id="existingrequesticons">
-                            <a class="btn btn-default" href="#" onclick="quickApproveConfirm(' . $rec->id . ',\'' . get_string('quickapprove_desc', 'block_cmanager') . '\')"><img src="icons/list/quick.png"/>&nbsp;' . get_string('quickapprove', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="admin/approve_course.php?id=' . $rec->id . '"><img src="icons/list/approve.png">&nbsp;' . get_string('approve', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="admin/deny_course.php?id=' . $rec->id . '"><img src="icons/list/deny.png"/>&nbsp;' . get_string('deny', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="course_request.php?mode=2&edit=' . $rec->id . '"><img src="icons/list/edit.png"/>&nbsp;' . get_string('edit', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="#" onclick="cancelConfirm(' . $rec->id . ',\'' . get_string('configure_delete', 'block_cmanager') . '\')" href="#"><img src="icons/list/delete.png"/>&nbsp;' . get_string('delete', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="comment.php?type=adminq&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_cmanager') . '</a>
+                            <a class="btn btn-default" href="#" onclick="quickApproveConfirm(' . $rec->id . ',\'' . get_string('quickapprove_desc', 'block_ckc_requests_manager') . '\')"><img src="icons/list/quick.png"/>&nbsp;' . get_string('quickapprove', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="admin/approve_course.php?id=' . $rec->id . '"><img src="icons/list/approve.png">&nbsp;' . get_string('approve', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="admin/deny_course.php?id=' . $rec->id . '"><img src="icons/list/deny.png"/>&nbsp;' . get_string('deny', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="course_request.php?mode=2&edit=' . $rec->id . '"><img src="icons/list/edit.png"/>&nbsp;' . get_string('edit', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="#" onclick="cancelConfirm(' . $rec->id . ',\'' . get_string('configure_delete', 'block_ckc_requests_manager') . '\')" href="#"><img src="icons/list/delete.png"/>&nbsp;' . get_string('delete', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="comment.php?type=adminq&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_ckc_requests_manager') . '</a>
 						</div>
                     ';
 
@@ -162,8 +162,8 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
                 else if ($rightpaneltype == 'admin_arch') {
                     $outputhtml .= '
 					<div class="btn-group" padding-bottom:6.5px">
-                        <a class="btn btn-default" onclick="cancelConfirm(' . $rec->id . ', \'delete\')" href="#"><img src="icons/list/delete.png"/>&nbsp;' . get_string('delete', 'block_cmanager') . '</a>
-                        <a class="btn btn-default" href="comment.php?type=adminarch&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_cmanager') . '</a>
+                        <a class="btn btn-default" onclick="cancelConfirm(' . $rec->id . ', \'delete\')" href="#"><img src="icons/list/delete.png"/>&nbsp;' . get_string('delete', 'block_ckc_requests_manager') . '</a>
+                        <a class="btn btn-default" href="comment.php?type=adminarch&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_ckc_requests_manager') . '</a>
 					</div>
 				';
                 } // For module_manager.php.
@@ -171,17 +171,17 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
 
                     $outputhtml .= '
     			        <div class="btn-group" padding-bottom:6.5px" id="existingrequesticons">
-                            <a class="btn btn-default" href="view_summary.php?id=' . $rec->id . '"><img src="icons/list/open.png"/>&nbsp;' . get_string('view', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="course_request.php?mode=2&edit=' . $rec->id . '"><img src="icons/list/edit.png"/>&nbsp;' . get_string('edit', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" onclick="cancelConfirm(' . $rec->id . ',\'' . get_string('cmanagerConfirmCancel', 'block_cmanager') . '\')" href="#"><img src="icons/list/deny.png"/>&nbsp;' . get_string('cancel', 'block_cmanager') . '</a>
-                            <a class="btn btn-default" href="comment.php?type=userq&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_cmanager') . '</a>
+                            <a class="btn btn-default" href="view_summary.php?id=' . $rec->id . '"><img src="icons/list/open.png"/>&nbsp;' . get_string('view', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="course_request.php?mode=2&edit=' . $rec->id . '"><img src="icons/list/edit.png"/>&nbsp;' . get_string('edit', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" onclick="cancelConfirm(' . $rec->id . ',\'' . get_string('cmanagerConfirmCancel', 'block_ckc_requests_manager') . '\')" href="#"><img src="icons/list/deny.png"/>&nbsp;' . get_string('cancel', 'block_ckc_requests_manager') . '</a>
+                            <a class="btn btn-default" href="comment.php?type=userq&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_ckc_requests_manager') . '</a>
             			</div>';
                 } // For module_manager_history.php.
                 else if ($rightpaneltype == 'user_history') {
                     $outputhtml .= '
         				<div class="btn-group" padding-bottom:5px">
-    						<a class="btn btn-default" href="view_summary.php?id=' . $rec->id . '"><img src="icons/list/open.png"/>&nbsp;' . get_string('view', 'block_cmanager') . '</a>
-    						<a class="btn btn-default" href="comment.php?type=userarch&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_cmanager') . '</a>
+    						<a class="btn btn-default" href="view_summary.php?id=' . $rec->id . '"><img src="icons/list/open.png"/>&nbsp;' . get_string('view', 'block_ckc_requests_manager') . '</a>
+    						<a class="btn btn-default" href="comment.php?type=userarch&id=' . $rec->id . '"><img src="icons/list/comment.png"/>&nbsp;' . get_string('addviewcomments', 'block_ckc_requests_manager') . '</a>
         				</div>';
                 }
             }
@@ -190,29 +190,29 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
             $outputhtml .= '
 			 <table class="table-striped mt-2" style="min-width:600px;">
 				<tr>
-					<th style="width:25%;">' . get_string('status', 'block_cmanager') . ':</td>
-                    <td>' . get_string('requestReview_' . str_replace(' ', '_', $rec->status), 'block_cmanager') . '</td>
+					<th style="width:25%;">' . get_string('status', 'block_ckc_requests_manager') . ':</td>
+                    <td>' . get_string('requestReview_' . str_replace(' ', '_', $rec->status), 'block_ckc_requests_manager') . '</td>
 				</tr>';
 
             // Check if shortname exists
             if ($rightpaneltype == 'admin_queue' && $shortnameexists == 1 || $shortnameexistsmode == 1) {
                 $outputhtml .= '
                     <tr>
-                        <th style="color:red">' . get_string('displayListWarningTitle', 'block_cmanager') . ':</td>
-                        <td><span style="color:red">' . get_string('displayListWarningSideText', 'block_cmanager') . '</span></td>
+                        <th style="color:red">' . get_string('displayListWarningTitle', 'block_ckc_requests_manager') . ':</td>
+                        <td><span style="color:red">' . get_string('displayListWarningSideText', 'block_ckc_requests_manager') . '</span></td>
                     </tr>
                 ';
             }
 
             $outputhtml .= '
 				<tr>
-					<th>' . get_string('creationdate', 'block_cmanager') . ':</th>
+					<th>' . get_string('creationdate', 'block_ckc_requests_manager') . ':</th>
 					<td>' . $rec->createdate . '</td>
 				</tr>
 
 				<tr>
-					<th>' . get_string('requesttype', 'block_cmanager') . ':</th>
-					<td>' . get_string('course_new_mod_create', 'block_cmanager') . '</td>
+					<th>' . get_string('requesttype', 'block_ckc_requests_manager') . ':</th>
+					<td>' . get_string('course_new_mod_create', 'block_ckc_requests_manager') . '</td>
 				</tr>
 
 				<tr>
@@ -226,7 +226,7 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
 				</tr>';
 
             if (isset($rec->modmode)) {
-                $selectedmodname = $DB->get_field_select('block_cmanager_config', 'value', "varname = 'page1_fielddesc3'");
+                $selectedmodname = $GLOBALS['DB']->get_field_select('block_ckc_requests_manager_config', 'value', "varname = 'page1_fielddesc3'");
 
                 $outputhtml .= '
 					<tr>
@@ -239,7 +239,7 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
             if ($editcatavailable == true) {
                 $movetocategories = array();
                 $notused = array();
-                if ($CFG->branch > 35) {
+                if ($GLOBALS['CFG']->branch > 35) {
                     $movetocategories += core_course_category::make_categories_list();
                 } else {
                     $movetocategories += coursecat::make_categories_list();
@@ -248,21 +248,21 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
                 $cateDrop = html_writer::select($movetocategories, 'cat' . $rec->id, $rec->cate, null);
                 $catlisthtml .= '<div id="catname" class="catname">' . $cateDrop . '';
                 $catlisthtml .= '<input class="btn btn-default" id="clickMe" type="button" value="' .
-                        get_string('update', 'block_cmanager') . '" onclick="saveChangedCategory(\'' . $rec->id . '\')" /></div>';
+                        get_string('update', 'block_ckc_requests_manager') . '" onclick="saveChangedCategory(\'' . $rec->id . '\')" /></div>';
 
             } else {
 
                 if (!empty($rec->cate)) {
-                    $catlisthtml .= format_string($DB->get_field_select('course_categories', 'name', "id =" . $rec->cate));
+                    $catlisthtml .= format_string($GLOBALS['DB']->get_field_select('course_categories', 'name', "id =" . $rec->cate));
 
                 } else {
-                    $catlisthtml = '<em>' . get_string('noneselected', 'block_cmanager') . '</em>';
+                    $catlisthtml = '<em>' . get_string('noneselected', 'block_ckc_requests_manager') . '</em>';
                 }
 
             }
             $outputhtml .= '
                 <tr>
-					<th> ' . get_string('selectedcategory', 'block_cmanager') . ': </th>
+					<th> ' . get_string('selectedcategory', 'block_ckc_requests_manager') . ': </th>
 					<td>' . $catlisthtml . '</td>
 				</tr>';
 
@@ -270,22 +270,22 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
 
                 $outputhtml .= '
                     <tr>
-                        <th> ' . get_string('configure_EnrolmentKey', 'block_cmanager') . ':</th>
+                        <th> ' . get_string('configure_EnrolmentKey', 'block_ckc_requests_manager') . ':</th>
                         <td>' . $rec->modkey . '</td>
                     </tr>';
 
             }
 
             $outputhtml .= '
-				' . block_cmanager_generate_summary($rec->id, $rec->formid) . '
+				' . block_ckc_requests_manager_generate_summary($rec->id, $rec->formid) . '
 
 				<tr>
-					<th>' . get_string('originator', 'block_cmanager') . ':</th>
+					<th>' . get_string('originator', 'block_ckc_requests_manager') . ':</th>
 					<td>' . $lecturerhtml . '</td>
 				</tr>
 
 				<tr>
-					<th>' . get_string('comments', 'block_cmanager') . ':</th>
+					<th>' . get_string('comments', 'block_ckc_requests_manager') . ':</th>
 					<td>' . $latestComment . '</td>
 				</tr>
 			 </table>
@@ -300,16 +300,16 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
     /**
      * Generate a summary
      */
-    function block_cmanager_generate_summary($recordid, $formid): string {
+    function block_ckc_requests_manager_generate_summary($recordid, $formid): string {
 
-        global $CFG, $DB;
+        global $GLOBALS['CFG'], $GLOBALS['DB'];
 
         $generatedhtml = '';
 
         // Get the form fields from the database.
         $wherequery = "formid = '$formid'";
 
-        $modrecords = $DB->get_records('block_cmanager_formfields', array('formid' => $formid), $sort = 'position ASC');
+        $modrecords = $GLOBALS['DB']->get_records('block_ckc_requests_manager_formfields', array('formid' => $formid), $sort = 'position ASC');
 
         $counter = 1;
 
@@ -321,7 +321,7 @@ function block_cmanager_display_admin_list($pendinglist, $includerightpanel, $in
             $generatedhtml .= '  <strong>' . format_string($record->lefttext) . ': </strong>';
             $generatedhtml .= ' </td>';
             $generatedhtml .= '	<td>';
-            $customfield = $DB->get_field('block_cmanager_records', $fieldidname, array('id' => $recordid));
+            $customfield = $GLOBALS['DB']->get_field('block_ckc_requests_manager_records', $fieldidname, array('id' => $recordid));
             $generatedhtml .= format_string($customfield);
             $generatedhtml .= '	</td>';
             $generatedhtml .= '</tr>';

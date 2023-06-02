@@ -5,7 +5,7 @@
 >
   <TABLES>
 
-<TABLE NAME="block_cmanager_comments" COMMENT="block_cmanager_comments table retrofitted from MySQL" NEXT="block_cmanager_config">
+<TABLE NAME="block_ckc_requests_manager_comments" COMMENT="block_ckc_requests_manager_comments table retrofitted from MySQL" NEXT="block_ckc_requests_manager_config">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="instanceid"/>
         <FIELD NAME="instanceid" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"  PREVIOUS="id" NEXT="createdbyid"/>
@@ -19,7 +19,7 @@
     </TABLE>
 
 
- <TABLE NAME="block_cmanager_config" COMMENT="block_cmanager_config table retrofitted from MySQL" PREVIOUS="block_cmanager_comments" NEXT="block_cmanager_formfields">
+ <TABLE NAME="block_ckc_requests_manager_config" COMMENT="block_ckc_requests_manager_config table retrofitted from MySQL" PREVIOUS="block_ckc_requests_manager_comments" NEXT="block_ckc_requests_manager_formfields">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="varname"/>
         <FIELD NAME="varname" TYPE="char" LENGTH="200" NOTNULL="true" SEQUENCE="false"  PREVIOUS="id" NEXT="value"/>
@@ -30,7 +30,7 @@
       </KEYS>
     </TABLE>
 
- <TABLE NAME="block_cmanager_formfields" COMMENT="block_cmanager_formfields table retrofitted from MySQL" PREVIOUS="block_cmanager_config" NEXT="block_cmanager_form_data">
+ <TABLE NAME="block_ckc_requests_manager_formfields" COMMENT="block_ckc_requests_manager_formfields table retrofitted from MySQL" PREVIOUS="block_ckc_requests_manager_config" NEXT="block_ckc_requests_manager_form_data">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="type"/>
         <FIELD NAME="type" TYPE="char" LENGTH="200" NOTNULL="true" SEQUENCE="false"  PREVIOUS="id" NEXT="lefttext"/>
@@ -38,7 +38,7 @@
         <FIELD NAME="position" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="lefttext" NEXT="formid"/>
         <FIELD NAME="formid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="position" NEXT="reqfield"/>
         <FIELD NAME="reqfield" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="formid"/>
-      
+
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -46,7 +46,7 @@
     </TABLE>
 
 
- <TABLE NAME="block_cmanager_form_data" COMMENT="block_cmanager_form_data table retrofitted from MySQL" PREVIOUS="block_cmanager_formfields" NEXT="block_cmanager_records">
+ <TABLE NAME="block_ckc_requests_manager_form_data" COMMENT="block_ckc_requests_manager_form_data table retrofitted from MySQL" PREVIOUS="block_ckc_requests_manager_formfields" NEXT="block_ckc_requests_manager_records">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="fieldid"/>
         <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="value"/>
@@ -58,7 +58,7 @@
     </TABLE>
 
 
-<TABLE NAME="block_cmanager_records" COMMENT="block_cmanager_records table retrofitted from MySQL" PREVIOUS="block_cmanager_form_data">
+<TABLE NAME="block_ckc_requests_manager_records" COMMENT="block_ckc_requests_manager_records table retrofitted from MySQL" PREVIOUS="block_ckc_requests_manager_form_data">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="createdbyid"/>
         <FIELD NAME="createdbyid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="modname"/>
@@ -95,6 +95,6 @@
 
 
   </TABLES>
-  
+
 </XMLDB>
 

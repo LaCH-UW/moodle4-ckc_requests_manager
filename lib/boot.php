@@ -6,7 +6,7 @@ Generate a generic bootstrap pop-up window.
 
 @param $title the text in the title bar
 @param $text to be shown
-@param $btnText text on the single button. 
+@param $btnText text on the single button.
 */
 function generateGenericPop($id, $title, $text, $btnText){
 
@@ -24,15 +24,15 @@ $html = '
         </button>
       </div>
       <div class="modal-body">
-      
+
         '.$text.'
-        
-        
-        
+
+
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">'.$btnText.'</button>
-       
+
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@ Generate a generic bootstrap pop-up with a conf option.
 
 @param $title the text in the title bar
 @param $text to be shown
-@param $btnText text on the single button. 
+@param $btnText text on the single button.
 */
 function generateGenericConfirm($id, $title, $text, $btnText){
 
@@ -71,12 +71,12 @@ $html = '
       </div>
       <div class="modal-body">
             '.$text.'
-        
-        
-        
+
+
+
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">'.get_string('cancel','block_cmanager').'</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">'.get_string('cancel','block_ckc_requests_manager').'</button>
         <button type="button" class="btn btn-primary" id="ok'.$id.'">'.$btnText.'</button>
       </div>
     </div>

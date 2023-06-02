@@ -1,43 +1,49 @@
 <?php
-// --------------------------------------------------------- 
-// block_cmanager is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// block_cmanager is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-//
-// COURSE REQUEST MANAGER BLOCK FOR MOODLE
-// by Kyle Goslin & Daniel McSweeney
-// Copyright 2012-2014 - Institute of Technology Blanchardstown.
-// ---------------------------------------------------------
 
- 
 /**
  * COURSE REQUEST MANAGER
-  *
- * @package    block_cmanager
- * @copyright  2018 Kyle Goslin, Daniel McSweeney
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @category  Block
+ * @package   RequestsManager
+ * @author    Marcin Zbiegień <m.zbiegien@uw.edu.pl>
+ * @copyright 2023 UW
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @link      https://uw.edu.pl
  */
-class block_cmanager_edit_form extends block_edit_form {
- 
-    protected function specific_definition($mform) {
-        global $CFG;
+
+/**
+ * Class.
+ */
+class block_ckc_requests_manager_edit_form extends block_edit_form
+{
+
+
+    /**
+     * Set form elements specific to the given object.
+     *
+     * @param object $mForm Form object.
+     *
+     * @return void
+     *
+     * @throws coding_exception On errors.
+     */
+    protected function specific_definition($mForm)
+    {
         // Section header title according to language file.
-        $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
-         
-        $mform->addElement('html', '<a href="'.$CFG->wwwroot.'/blocks/cmanager/cmanager_confighome.php"> '.get_string('configurecoursemanagersettings', 'block_cmanager').'<a/>');
-        
-    
-        $mform->setDefault('config_text', 'default value');
-        $mform->setType('config_text', PARAM_MULTILANG);        
- 
-    }
-}
+        $mForm->addElement(
+            'header',
+            'configheader',
+            get_string('blocksettings', 'block')
+        );
+        $mForm->addElement(
+            'html',
+            '<a href="'.$GLOBALS['CFG']->wwwroot.'/blocks/ckc_requests_manager/cmanager_confighome.php"> '.get_string('configurecoursemanagersettings', 'block_ckc_requests_manager').'<a/>'
+        );
+
+        $mForm->setDefault('config_text', 'default value');
+        $mForm->setType('config_text', PARAM_MULTILANG);
+
+    }//end specific_definition()
+
+
+}//end class
