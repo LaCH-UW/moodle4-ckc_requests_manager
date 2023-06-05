@@ -17,6 +17,6 @@ if (false === defined('MOODLE_INTERNAL')) {
 
 $plugin->version = 2023060100;
 // The current module version (Date: YYYYMMDDXX).
-$plugin->requires = 20230526;
+$plugin->requires = 2022112803;
 // Requires Moodle 4.1.
 $plugin->component = 'block_ckc_requests_manager';
